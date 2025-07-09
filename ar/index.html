@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Quote: Automated Data Collection System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (Beige, Slate, Muted Teal Accent) -->
+    <!-- Application Structure Plan: A single-page dashboard structure is used to present the most critical information first. It starts with high-level summary cards and an interactive donut chart for an immediate overview of the cost distribution. Users can then scroll or use the navigation to drill down into a detailed, interactive table, monthly cost visualizations, and collapsible sections for scope and terms. This flow from summary to detail is designed for optimal user comprehension, allowing the client to grasp the key figures quickly and explore the specifics at their own pace. The interactivity between the chart and the table creates a cohesive experience, reinforcing the relationship between different data points. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: One-time development cost breakdown. -> Goal: Compare the contribution of each element to the total cost. -> Viz: Interactive Donut Chart. -> Interaction: Clicking a segment highlights the corresponding table row and updates a details panel. -> Justification: Excellent for showing part-to-whole relationships and engaging the user visually. -> Library: Chart.js (Canvas).
+        - Report Info: Detailed cost table. -> Goal: Organize and inform with specifics. -> Viz: Interactive HTML Table. -> Interaction: Rows highlight on hover and on chart-click. -> Justification: The best format for detailed tabular data, enhanced with interactivity. -> Library: HTML/JS.
+        - Report Info: Monthly operational costs. -> Goal: Inform about ongoing expenses. -> Viz: Simple summary cards. -> Justification: The data is simple and a chart would be overkill; clean cards are more direct. -> Library: HTML/CSS.
+        - Report Info: Scope & Terms. -> Goal: Organize text-heavy info without cluttering the UI. -> Viz: Accordion component. -> Interaction: Click to expand/collapse. -> Justification: Hides dense information by default, improving initial readability and reducing overwhelm. -> Library: HTML/JS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #334155;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .table-highlight {
+            background-color: #E0E7FF !important;
+            transform: scale(1.02);
+            transition: transform 0.2s ease-out, background-color 0.2s ease-out;
+        }
+        .nav-active {
+            color: #14B8A6;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 border-b border-slate-200">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-lg font-bold text-slate-700">Citosoft</h1>
+                </div>
+                <div class="hidden md:flex md:items-center md:space-x-8">
+                    <a href="#summary" class="nav-link text-slate-500 hover:text-slate-800 font-medium">Summary</a>
+                    <a href="#cost-breakdown" class="nav-link text-slate-500 hover:text-slate-800 font-medium">Cost Breakdown</a>
+                    <a href="#monthly-costs" class="nav-link text-slate-500 hover:text-slate-800 font-medium">Monthly Costs</a>
+                    <a href="#scope-terms" class="nav-link text-slate-500 hover:text-slate-800 font-medium">Scope & Terms</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <section class="text-center mb-16">
+            <h1 class="text-4xl font-bold text-slate-800 tracking-tight">Project Quote</h1>
+            <p class="mt-2 text-lg text-slate-600">Automated Data Collection and Integration System</p>
+            <div class="mt-4 text-sm text-slate-500">
+                <span><strong>For:</strong> Aaron Ripper</span> | 
+                <span><strong>By:</strong> Daniel Cherrington</span> | 
+                <span><strong>Date:</strong> July 9, 2025</span>
+            </div>
+        </section>
+
+        <section id="summary" class="mb-20 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-slate-800 mb-2 text-center">Project Summary</h2>
+            <p class="text-center text-slate-600 max-w-3xl mx-auto mb-10">This interactive quote provides a transparent overview of the project investment. The dashboard below visualizes the distribution of the one-time development costs and highlights the key financial figures. Click on a chart segment to see corresponding details in the table below.</p>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+                <div class="lg:col-span-1 flex flex-col justify-center space-y-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-medium text-slate-500">One-Time Development</h3>
+                        <p class="text-4xl font-bold text-slate-800 mt-1">£12,160</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-medium text-slate-500">Est. Monthly Operations</h3>
+                        <p class="text-4xl font-bold text-slate-800 mt-1">£35-£150</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-sm font-medium text-slate-500">Total Estimated Hours</h3>
+                        <p class="text-4xl font-bold text-slate-800 mt-1">152</p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="w-full md:w-1/2">
+                            <div class="chart-container">
+                                <canvas id="costBreakdownChart"></canvas>
+                            </div>
+                        </div>
+                        <div id="details-panel" class="w-full md:w-1/2 flex items-center justify-center bg-slate-50 rounded-lg p-6 min-h-[200px]">
+                            <div class="text-center">
+                                <h4 id="details-title" class="text-xl font-bold text-slate-700">Click a segment</h4>
+                                <p id="details-text" class="mt-2 text-slate-600">to see details about a specific project component here.</p>
+                                <p id="details-cost" class="mt-4 text-2xl font-bold text-teal-600"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cost-breakdown" class="mb-20 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-slate-800 mb-2 text-center">One-Time Development Cost Breakdown</h2>
+            <p class="text-center text-slate-600 max-w-3xl mx-auto mb-10">The following table provides an itemized list of all development tasks. These figures correspond to the segments in the chart above. Hover over any row for a quick highlight.</p>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th class="p-4 font-semibold text-slate-600">Element</th>
+                            <th class="p-4 font-semibold text-slate-600 text-center">Hours</th>
+                            <th class="p-4 font-semibold text-slate-600 text-center">Cost</th>
+                            <th class="p-4 font-semibold text-slate-600">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cost-table-body" class="divide-y divide-slate-200">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="monthly-costs" class="mb-20 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-slate-800 mb-2 text-center">Estimated Monthly Costs</h2>
+            <p class="text-center text-slate-600 max-w-3xl mx-auto mb-10">To ensure the system runs smoothly, some third-party services are required. The estimated monthly costs are detailed below, offering a clear view of ongoing operational expenses.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                 <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-700">n8n Cloud</h3>
+                    <p class="text-2xl font-bold text-teal-600 mt-2">£30 – £80</p>
+                    <p class="text-sm text-slate-500 mt-2">Managed service pricing, depends on workflow executions.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-700">ScrapingBee</h3>
+                    <p class="text-2xl font-bold text-teal-600 mt-2">£0 – £23</p>
+                    <p class="text-sm text-slate-500 mt-2">Free tier is likely sufficient. Starter plan if scaling needed.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h3 class="font-bold text-slate-700">Proxy Service</h3>
+                    <p class="text-2xl font-bold text-teal-600 mt-2">£10 – £50</p>
+                    <p class="text-sm text-slate-500 mt-2">Optional but recommended for Puppeteer-based scrapers.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="scope-terms" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-slate-800 mb-2 text-center">Scope & Terms</h2>
+            <p class="text-center text-slate-600 max-w-3xl mx-auto mb-10">This section outlines the project's deliverables and the terms of our agreement. Click each item to expand and view the details.</p>
+            <div class="space-y-4 max-w-4xl mx-auto">
+                <div class="accordion-item bg-white rounded-xl shadow-sm border border-slate-200">
+                    <button class="accordion-header w-full flex justify-between items-center p-5 text-left font-semibold text-slate-700">
+                        <span>Project Scope & Deliverables</span>
+                        <span class="accordion-icon transform transition-transform duration-300">▼</span>
+                    </button>
+                    <div class="accordion-content overflow-hidden max-h-0 transition-all duration-500 ease-in-out">
+                        <ul class="p-5 pt-0 list-disc list-inside text-slate-600 space-y-2">
+                            <li>Setting up and configuring the n8n automation platform.</li>
+                            <li>Integrating with various APIs (e.g., Eventbrite, Google APIs).</li>
+                            <li>Developing custom scraping solutions for static and dynamic content.</li>
+                            <li>Implementing sophisticated filtering and keyword logic.</li>
+                            <li>Centralizing job listing data collection.</li>
+                            <li>Ensuring seamless Google Sheets integration with formatting and error handling.</li>
+                            <li>Establishing reliable scheduling and orchestration of workflows.</li>
+                            <li>Through testing, debugging, and deployment of the entire system.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="accordion-item bg-white rounded-xl shadow-sm border border-slate-200">
+                    <button class="accordion-header w-full flex justify-between items-center p-5 text-left font-semibold text-slate-700">
+                        <span>Payment Terms</span>
+                        <span class="accordion-icon transform transition-transform duration-300">▼</span>
+                    </button>
+                    <div class="accordion-content overflow-hidden max-h-0 transition-all duration-500 ease-in-out">
+                         <ul class="p-5 pt-0 list-disc list-inside text-slate-600 space-y-2">
+                            <li>50% of the total one-time development cost is due upfront.</li>
+                            <li>The remaining balance is due upon project completion.</li>
+                            <li>Payment is due within 14 days of the invoice date.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="accordion-item bg-white rounded-xl shadow-sm border border-slate-200">
+                    <button class="accordion-header w-full flex justify-between items-center p-5 text-left font-semibold text-slate-700">
+                        <span>Validity</span>
+                        <span class="accordion-icon transform transition-transform duration-300">▼</span>
+                    </button>
+                    <div class="accordion-content overflow-hidden max-h-0 transition-all duration-500 ease-in-out">
+                        <p class="p-5 pt-0 text-slate-600">This quote is valid for 30 days from the date of issue (July 9, 2025).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-slate-200 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-slate-500">
+            <p class="font-bold">Daniel Cherrington | Citosoft</p>
+            <p>
+                <a href="https://www.citosoft.co.uk" target="_blank" rel="noopener noreferrer" class="hover:text-teal-600">https://www.citosoft.co.uk</a>
+            </p>
+            <p class="mt-4 text-xs">&copy; 2025 Citosoft. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const projectData = [
+            { element: 'Project Setup & Environment', hours: 8, cost: 640, notes: 'Setting up n8n, Google API, and Puppeteer microservice environment' },
+            { element: 'Eventbrite API Integration', hours: 8, cost: 640, notes: 'API integration, filtering, Google Sheets output' },
+            { element: 'Static Scraping (Museums & Galleries)', hours: 12, cost: 960, notes: 'Axios + Cheerio scraping scripts triggered from n8n' },
+            { element: 'Puppeteer Scraper Microservice (DICE)', hours: 24, cost: 1920, notes: 'Develop, test, deploy scraper API' },
+            { element: 'Puppeteer Scraper Microservice (Timeout)', hours: 20, cost: 1600, notes: 'Similar to DICE but slightly less complex' },
+            { element: 'Filtering & Keyword Logic in n8n', hours: 8, cost: 640, notes: 'Centralized filtering logic for events and jobs' },
+            { element: 'Job Listings Data Collection', hours: 24, cost: 1920, notes: 'API calls or Puppeteer scraping for multiple job boards' },
+            { element: 'Google Sheets Integration & Formatting', hours: 8, cost: 640, notes: 'Setup, test, error handling' },
+            { element: 'Scheduling & Orchestration (n8n workflows)', hours: 8, cost: 640, notes: 'Cron jobs, error handling, logging' },
+            { element: 'Testing, Debugging, Deployment', hours: 16, cost: 1280, notes: 'Full end-to-end testing and launch' },
+            { element: 'Buffer for unforeseen issues', hours: 16, cost: 1280, notes: 'Handling API changes, captchas, page changes' },
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const tableBody = document.getElementById('cost-table-body');
+            projectData.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.id = `row-${index}`;
+                row.className = 'hover:bg-slate-50 transition-colors duration-200';
+                row.innerHTML = `
+                    <td class="p-4 font-medium text-slate-800">${item.element}</td>
+                    <td class="p-4 text-slate-600 text-center">${item.hours}</td>
+                    <td class="p-4 text-slate-600 text-center">£${item.cost.toLocaleString()}</td>
+                    <td class="p-4 text-slate-500 text-sm">${item.notes}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            const ctx = document.getElementById('costBreakdownChart').getContext('2d');
+            const costBreakdownChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: projectData.map(d => d.element),
+                    datasets: [{
+                        label: 'Cost',
+                        data: projectData.map(d => d.cost),
+                        backgroundColor: [
+                            '#2DD4BF', '#38BDF8', '#818CF8', '#A78BFA', '#F472B6',
+                            '#FB923C', '#FACC15', '#4ADE80', '#60A5FA', '#C084FC', '#F87171'
+                        ],
+                        borderColor: '#FDFBF8',
+                        borderWidth: 4,
+                        hoverOffset: 16,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(context.parsed);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            document.getElementById('costBreakdownChart').onclick = (evt) => {
+                const activePoints = costBreakdownChart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+                if (activePoints.length) {
+                    const firstPoint = activePoints[0];
+                    const index = firstPoint.index;
+                    updateDetailsPanel(index);
+                }
+            };
+            
+            const detailsTitle = document.getElementById('details-title');
+            const detailsText = document.getElementById('details-text');
+            const detailsCost = document.getElementById('details-cost');
+
+            function updateDetailsPanel(index) {
+                const data = projectData[index];
+                detailsTitle.textContent = data.element;
+                detailsText.textContent = data.notes;
+                detailsCost.textContent = `£${data.cost.toLocaleString()}`;
+
+                document.querySelectorAll('#cost-table-body tr').forEach(r => r.classList.remove('table-highlight'));
+                const row = document.getElementById(`row-${index}`);
+                row.classList.add('table-highlight');
+                row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            const accordions = document.querySelectorAll('.accordion-item');
+            accordions.forEach(item => {
+                const header = item.querySelector('.accordion-header');
+                const content = item.querySelector('.accordion-content');
+                const icon = item.querySelector('.accordion-icon');
+                header.addEventListener('click', () => {
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
+            });
+
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('nav-active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('nav-active');
+                            }
+                        });
+                    }
+                });
+            }, { rootMargin: '-50% 0px -50% 0px' });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
+
+</body>
+</html>
